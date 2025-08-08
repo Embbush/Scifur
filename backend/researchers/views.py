@@ -47,8 +47,13 @@ class UserViewSet(viewsets.ModelViewSet):
         if researcher_data:
             print("\n🔍 Données pour le chercheur :", researcher_data)  # Afficher les données du chercheur
 
-            # Cherche si un chercheur existe pour cet utilisateur
-            researcher, created = Researcher.objects.get_or_create(user=user)
+            # Remove potential user key to avoid conflicts
+            researcher_data = {k: v for k, v in researcher_data.items() if k != "user"}
+
+            # Cherche si un chercheur existe pour cet utilisateur ou le crée avec les données fournies
+            researcher, created = Researcher.objects.get_or_create(
+                user=user, defaults=researcher_data
+            )
 
             # Si le chercheur existe déjà, on le met à jour
             if not created:
